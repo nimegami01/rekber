@@ -1,1 +1,8 @@
-# rekber
+# RANCANG BANGUN SISTEM REKENING BERSAMA UNTUK KEAMANAN TRANSAKSI ONLINE DENGAN METODE BRUTE FORCE STRING MATCHING
+
+## Sistem menggunakan Angular 13.0.2
+## Node 16.13.0
+## NPM 8.1.0
+
+### Nama : Sativa Wahyu Priyanto
+### Nim : 17.01.53.0052
