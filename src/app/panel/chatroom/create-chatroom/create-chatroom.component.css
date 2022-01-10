@@ -1,0 +1,27 @@
+.durasi .input {
+  margin-right: 100px;
+}
+
+.durasi .select {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 90px;
+}
+
+.harga_convert {
+  font-size: 20px;
+  padding: 12px 15px;
+  background-color: #eee;
+  font-weight: 600;
+}
+
+.harga_set div {
+  margin-bottom: 7px;
+  border-left: 3px solid rgb(63, 192, 231);
+  padding-left: 10px;
+}
+
+.harga_set .fee {
+  font-size: 13px;
+}

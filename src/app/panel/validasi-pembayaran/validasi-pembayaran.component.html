@@ -1,0 +1,194 @@
+<h1 class="h3 mb-4 text-gray-800">Validasi Pembayaran</h1>
+
+<app-loading [loading]="loading"></app-loading>
+<ng-container *ngIf="!loading">
+  <h1 class="h5 mb-4 text-gray-800" *ngIf="listPembayaran.length">
+    Pembayaran Pending
+  </h1>
+  <ng-container *ngFor="let a of listPembayaran">
+    <div class="card shadow mb-4">
+      <div
+        class="
+          font-weight-bold
+          card-header
+          py-3
+          d-flex
+          flex-row
+          align-items-center
+          justify-content-between
+        "
+      >
+        {{ a.transaksi.judul }}
+      </div>
+      <div class="card-body">
+        <div class="text-right mb-3">
+          <a
+            [routerLink]="[
+              '/admin',
+              'admin-chat',
+              a.pembayaran.data.id_transaksi
+            ]"
+            class="btn btn-info mr-2"
+          >
+            Detail
+          </a>
+          <button
+            class="btn btn-primary mr-2"
+            (click)="
+              actionPembayaran(
+                2,
+                a.pembayaran.id,
+                a.pembayaran.data.id_transaksi
+              )
+            "
+          >
+            Setujui
+          </button>
+          <button
+            class="btn btn-danger"
+            (click)="
+              actionPembayaran(
+                0,
+                a.pembayaran.id,
+                a.pembayaran.data.id_transaksi
+              )
+            "
+          >
+            Tolak
+          </button>
+        </div>
+        <div class="alert alert-secondary">
+          {{ a.pembayaran.data.pesan }}
+        </div>
+        <div class="font-weight-bold mb-2">Gambar</div>
+        <div class="image">
+          <div *ngFor="let a of a.pembayaran.data.gambar">
+            <a [href]="a" target="_blank">
+              <img [src]="a" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>
+
+<ng-container *ngIf="listPembayaranSelesai">
+  <hr />
+  <h1 class="h5 mb-4 text-gray-800">Pembayaran Disetujui</h1>
+
+  <ng-container *ngFor="let a of listPembayaranSelesai">
+    <div class="card shadow mb-4">
+      <div
+        class="
+          font-weight-bold
+          card-header
+          py-3
+          d-flex
+          flex-row
+          align-items-center
+          justify-content-between
+        "
+      >
+        {{ a.transaksi.judul }}
+      </div>
+      <div class="card-body">
+        <div class="text-right mb-3">
+          <a
+            [routerLink]="[
+              '/admin',
+              'admin-chat',
+              a.pembayaran.data.id_transaksi
+            ]"
+            class="btn btn-info mr-2"
+          >
+            Detail
+          </a>
+          <button
+            class="btn btn-danger"
+            (click)="
+              actionPembayaran(
+                0,
+                a.pembayaran.id,
+                a.pembayaran.data.id_transaksi
+              )
+            "
+          >
+            Tolak
+          </button>
+        </div>
+        <div class="alert alert-secondary">
+          {{ a.pembayaran.data.pesan }}
+        </div>
+        <div class="font-weight-bold mb-2">Gambar</div>
+        <div class="image">
+          <div *ngFor="let a of a.pembayaran.data.gambar">
+            <a [href]="a" target="_blank">
+              <img [src]="a" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>
+
+<ng-container *ngIf="listPembayaranTolak">
+  <hr />
+  <h1 class="h5 mb-4 text-gray-800">Pembayaran Ditolak</h1>
+
+  <ng-container *ngFor="let a of listPembayaranTolak">
+    <div class="card shadow mb-4">
+      <div
+        class="
+          font-weight-bold
+          card-header
+          py-3
+          d-flex
+          flex-row
+          align-items-center
+          justify-content-between
+        "
+      >
+        {{ a.transaksi.judul }}
+      </div>
+      <div class="card-body">
+        <div class="text-right mb-3">
+          <a
+            [routerLink]="[
+              '/admin',
+              'admin-chat',
+              a.pembayaran.data.id_transaksi
+            ]"
+            class="btn btn-info mr-2"
+          >
+            Detail
+          </a>
+          <button
+            class="btn btn-primary mr-2"
+            (click)="
+              actionPembayaran(
+                2,
+                a.pembayaran.id,
+                a.pembayaran.data.id_transaksi
+              )
+            "
+          >
+            Setujui
+          </button>
+        </div>
+        <div class="alert alert-secondary">
+          {{ a.pembayaran.data.pesan }}
+        </div>
+        <div class="font-weight-bold mb-2">Gambar</div>
+        <div class="image">
+          <div *ngFor="let a of a.pembayaran.data.gambar">
+            <a [href]="a" target="_blank">
+              <img [src]="a" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>

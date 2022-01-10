@@ -1,0 +1,22 @@
+<div class="loading-container m-3" *ngIf="loading">
+  <div class="mb-1">
+    <img [src]="global.loading" />
+  </div>
+  <div class="font-weight-bold">Loading.. Tunggu Sebentar..</div>
+</div>
+<div class="row justify-content-center" *ngIf="error">
+  <div class="alert alert-danger col-xl-8 col-lg-10 col-md-10 col-sm-12">
+    <h3 class="h5 mb-3">Opps.. terjadi kesalahan.</h3>
+    <div class="mb-2">Hal ini bisa terjadi karena:</div>
+    <ul class="mb-3">
+      <li>Koneksi anda tidak stabil.</li>
+      <li>Server Rekberin mengalami gangguan.</li>
+      <li>Terdapat bug.</li>
+    </ul>
+    <div class="danger-in">
+      Jika anda merasa koneksi internet anda stabil, silahkan refresh kembali.
+      Namun jika tetap error, silahkan report ke admin ke email berikut ini:
+      <a href="mailto:sativawahyu4@gmail.com">sativawahyu4@gmail.com</a>.
+    </div>
+  </div>
+</div>

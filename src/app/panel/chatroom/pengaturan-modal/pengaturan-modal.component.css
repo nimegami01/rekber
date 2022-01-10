@@ -1,0 +1,25 @@
+.durasi .input {
+  margin-right: 100px;
+}
+
+.durasi .select {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 90px;
+}
+
+.list-durationChange h5 {
+  font-size: 15px;
+  font-weight: 600;
+  border-left: 3px solid rgb(101, 192, 245);
+  padding-left: 10px;
+}
+
+.list-durationChange {
+  font-size: 13px;
+}
+
+.id_perpanjang {
+  margin-bottom: 5px;
+}

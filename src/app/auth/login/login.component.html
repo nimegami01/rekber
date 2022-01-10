@@ -1,0 +1,62 @@
+<div class="text-center">
+  <h1 class="h4 text-gray-900 mb-4">Masuk ke Rekberin</h1>
+</div>
+<div
+  class="alert"
+  *ngIf="loginMsg"
+  [ngClass]="{ 'alert-danger': !loginStatus, 'alert-success': loginStatus }"
+>
+  {{ loginMsg }}
+</div>
+<div class="form-login">
+  <div class="form-group">
+    <input
+      type="email"
+      class="form-control form-control-user"
+      id="email_"
+      placeholder="Enter Email Address..."
+      [formControl]="email"
+      [attr.disabled]="loadingLogin ? '' : null"
+      (keyup.enter)="loginWithEmailPass()"
+    />
+  </div>
+  <div class="form-group">
+    <input
+      type="password"
+      class="form-control form-control-user"
+      id="password_"
+      placeholder="Password"
+      [formControl]="password"
+      [attr.disabled]="loadingLogin ? '' : null"
+      (keyup.enter)="loginWithEmailPass()"
+    />
+  </div>
+  <button
+    class="btn btn-primary btn-user btn-block d-flex align-items-center justify-content-center"
+    [disabled]="!email.value || !password.value || loadingLogin"
+    (click)="loginWithEmailPass()"
+  >
+    <span
+      *ngIf="loadingLogin"
+      class="spinner-border spinner-border-sm mr-2"
+      role="status"
+      aria-hidden="true"
+    ></span>
+    Login
+  </button>
+</div>
+<div class="separator my-3">atau</div>
+<button (click)="loginWithGoogle()" class="btn btn-google btn-user btn-block">
+  <i class="fab fa-google fa-fw"></i> Login Dengan Google
+</button>
+<hr />
+<div class="row">
+  <div class="col-xl-6">
+    <div class="btn btn-block btn-secondary mb-3">Reset Password</div>
+  </div>
+  <div class="col-xl-6">
+    <a [routerLink]="['/auth/register']" class="btn btn-block btn-info"
+      >Daftar</a
+    >
+  </div>
+</div>

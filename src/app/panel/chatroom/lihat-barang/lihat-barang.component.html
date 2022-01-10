@@ -1,0 +1,67 @@
+<div class="modal-header align-items-center">
+  <h5 class="modal-title font-weight-bold pull-left mb-0">
+    {{
+      transaksi
+        ? transaksi.jenis_barang == "digital"
+          ? "Lihat Barang Digital"
+          : transaksi.jenis_barang == "fisik"
+          ? "Lihat Resi"
+          : "-"
+        : "Loading.."
+    }}
+  </h5>
+  <button
+    type="button"
+    class="close pull-right"
+    aria-label="Close"
+    (click)="bsModalRef.hide()"
+  >
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body info-transaksi-modal">
+  <app-loading [error]="" [loading]="loading"></app-loading>
+  <ng-container *ngIf="!lihatBrang && !loading">
+    <div class="font-weight-bold text-center">
+      {{
+        transaksi
+          ? transaksi.jenis_barang == "digital"
+            ? "Penjual belum mengirim barang digital."
+            : transaksi.jenis_barang == "fisik"
+            ? "Penjual belum mengirim resi."
+            : "-"
+          : "Loading.."
+      }}
+    </div>
+  </ng-container>
+  <ng-container *ngIf="lihatBrang && !loading">
+    <div *ngFor="let a of lihatBrang" class="info_barang">
+      <div class="font-weight-bold date">
+        Tanggal: {{ a.data.date | convertDate }}
+      </div>
+      <div class="clear"></div>
+      <div class="font-weight-bold mb-3">ID#{{ a.id }}</div>
+      <div class="mb-2">
+        {{
+          transaksi.jenis_barang == "digital"
+            ? "Barang Digital:"
+            : transaksi.jenis_barang == "fisik"
+            ? "Info Resi:"
+            : "-"
+        }}
+      </div>
+      <div class="alert alert-success">
+        <pre>{{ a.data.info_barang }}</pre>
+      </div>
+      <div class="mb-2">Info Tambahan:</div>
+      <div class="alert alert-success">
+        <pre>{{ a.data.alasan }}</pre>
+      </div>
+    </div>
+  </ng-container>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-danger" (click)="bsModalRef.hide()">
+    Tutup
+  </button>
+</div>

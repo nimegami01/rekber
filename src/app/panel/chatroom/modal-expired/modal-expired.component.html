@@ -1,0 +1,29 @@
+<div class="modal-header align-items-center">
+  <h5 class="modal-title font-weight-bold pull-left mb-0">Peringatan</h5>
+  <button
+    type="button"
+    class="close pull-right"
+    aria-label="Close"
+    (click)="bsModalRef.hide()"
+  >
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body info-transaksi-modal">
+  <div class="mb-3">
+    {{
+      userRole == "Pembeli"
+        ? "Durasi transaksi telah berakhir. Jika pembeli merasa transaksi belum selesai, silahkan minta ke penjual untuk melakukan permintaan perpanjangan kepada pihak rekber. Jika tidak silahkan kontak admin rekber di: @rekberin.com dengan menyertakan id transaksi."
+        : "Durasi transaksi telah berakhir. Jika penjual merasa transaksi belum selesai, silahkan lakukan perpanjangan durasi transaksi di pengaturan."
+    }}
+  </div>
+  <div class="alert alert-danger">
+    Jika tidak ada konfirmasi selama 7 hari, maka pihak rekber akan melakukan
+    pengecekan transaksi untuk menentukan pengiriman uang.
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-danger" (click)="bsModalRef.hide()">
+    Tutup
+  </button>
+</div>

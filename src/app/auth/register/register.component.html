@@ -1,0 +1,142 @@
+<div class="text-center">
+  <h1 class="h4 text-gray-900 mb-4">Daftar ke Rekberin</h1>
+</div>
+<div
+  class="alert"
+  [ngClass]="{
+    'alert-danger': !sendRegisterMsgStatus,
+    'alert-success': sendRegisterMsgStatus
+  }"
+  *ngIf="sendRegisterMsg"
+>
+  {{ sendRegisterMsg }}
+</div>
+<div class="form-login" [formGroup]="formRegister">
+  <div class="form-group">
+    <label for="namaLengkap">Nama Lengkap:</label>
+    <input
+      type="text"
+      class="form-control form-control-user"
+      id="namaLengkap"
+      placeholder="Nama Lengkap"
+      formControlName="namaLengkap"
+      (keyup)="namaLengkapDetect = true"
+      [attr.disabled]="registerLoading ? '' : null"
+      (keyup.enter)="registerWithEmailpass()"
+    />
+    <div *ngIf="namaLengkapDetect && f.namaLengkap.errors">
+      <small class="text-danger" *ngIf="f.namaLengkap.errors.required"
+        >Nama lengkap harus diisi.</small
+      >
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="email_">Email</label>
+    <input
+      type="email"
+      class="form-control form-control-user"
+      id="email_"
+      placeholder="Email"
+      formControlName="email"
+      (keyup)="emailDetect = true"
+      [attr.disabled]="registerLoading ? '' : null"
+      (keyup.enter)="registerWithEmailpass()"
+    />
+    <div *ngIf="emailDetect && f.email.errors">
+      <small class="text-danger" *ngIf="f.email.errors.required"
+        >Email harus diisi.</small
+      >
+      <small class="text-danger" *ngIf="f.email.errors.pattern">
+        Email tidak valid.
+      </small>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="password_">Password</label>
+    <div class="position-relative">
+      <input
+        [type]="password.primary ? 'text' : 'password'"
+        class="form-control form-control-user"
+        id="password_"
+        placeholder="Password"
+        formControlName="password"
+        (keyup)="keyupPassword(); passwordDetect = true"
+        [minlength]="6"
+        [attr.disabled]="registerLoading ? '' : null"
+        (keyup.enter)="registerWithEmailpass()"
+      />
+      <!-- Eye Show Hide -->
+      <ng-container>
+        <div
+          class="show-hide-eye"
+          (click)="password.primary = !password.primary"
+        >
+          <i class="fas fa-eye" *ngIf="password.primary"></i>
+          <i class="fas fa-eye-slash" *ngIf="!password.primary"></i>
+        </div>
+      </ng-container>
+      <!-- End Eye Show hide -->
+    </div>
+    <div *ngIf="passwordDetect && f.password.invalid">
+      <small class="text-danger">Minimal 6 karakter</small>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="passwordUlang">Ulangi Password</label>
+    <div class="position-relative">
+      <input
+        [type]="password.ulangi ? 'text' : 'password'"
+        class="form-control form-control-user"
+        id="passwordUlang"
+        placeholder="Ulangi Password"
+        formControlName="passwordUlangi"
+        (keyup)="keyupPassword()"
+        [minlength]="6"
+        [attr.disabled]="registerLoading ? '' : null"
+        (keyup.enter)="registerWithEmailpass()"
+      />
+      <!-- Eye Show Hide -->
+      <ng-container>
+        <div class="show-hide-eye" (click)="password.ulangi = !password.ulangi">
+          <i class="fas fa-eye" *ngIf="password.ulangi"></i>
+          <i class="fas fa-eye-slash" *ngIf="!password.ulangi"></i>
+        </div>
+      </ng-container>
+      <!-- End Eye Show hide -->
+    </div>
+    <div>
+      <small class="text-danger" *ngIf="!passwordMatch"
+        >Password tidak sama.</small
+      >
+    </div>
+  </div>
+  <button
+    class="btn btn-primary btn-user btn-block d-flex align-items-center justify-content-center"
+    (click)="registerWithEmailpass()"
+    [disabled]="!passwordMatch || formRegister.invalid || registerLoading"
+  >
+    <span
+      *ngIf="registerLoading"
+      class="spinner-border spinner-border-sm mr-2"
+      role="status"
+      aria-hidden="true"
+    ></span>
+    Daftar
+  </button>
+</div>
+<div class="separator my-3">atau</div>
+<button
+  (click)="registerWithGoogle()"
+  class="btn btn-google btn-user btn-block"
+>
+  <i class="fab fa-google fa-fw"></i> Login Dengan Google
+</button>
+<hr />
+<div class="row">
+  <div class="col-xl-6">
+    <div class="btn btn-block btn-secondary mb-3">Reset Password</div>
+  </div>
+  <div class="col-xl-6">
+    <a [routerLink]="['/auth/login']" class="btn btn-block btn-info">Login</a>
+  </div>
+</div>

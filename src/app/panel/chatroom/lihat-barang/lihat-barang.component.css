@@ -1,0 +1,33 @@
+.modal-title {
+  text-transform: capitalize;
+}
+
+.info_barang {
+  padding-left: 15px;
+  border-left: 3px solid #5db4ee;
+}
+
+.date {
+  font-size: 14px;
+  padding: 5px 10px;
+  background: #5db4ee;
+  color: #fff;
+  margin-bottom: 15px;
+  display: inline-block;
+  position: relative;
+}
+
+.date:after {
+  position: absolute;
+  top: 50%;
+  left: -17px;
+  width: 17px;
+  height: 3px;
+  transform: translate(0, -50%);
+  content: "";
+  background: #5db4ee;
+}
+
+pre {
+  margin-bottom: 0;
+}

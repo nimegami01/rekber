@@ -1,0 +1,12 @@
+.brand-image img {
+  width: 150px;
+  height: auto;
+}
+
+.brand-image {
+  background: #4e73df;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

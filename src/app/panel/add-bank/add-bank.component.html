@@ -1,0 +1,96 @@
+<h1 class="h3 mb-3 text-gray-800 title_transaksi">Tambah Bank</h1>
+<div class="row">
+  <div
+    class="col-xl-6 col-lg-6 col-md-6 col-sm-12 mb-sm-3 mb-3 mb-xl-0 mb-md-0"
+  >
+    <div class="card shadow mb-3">
+      <div class="card-body">
+        <div class="mb-3">
+          <label for="judul" class="form-label">Nama Bank</label>
+          <select
+            class="custom-select"
+            id="jenis_barang"
+            [formControl]="bankInfo"
+          >
+            <option *ngFor="let a of bankList; let i = index" [value]="i">
+              {{ a.name + " - " + a.type }}
+            </option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="rek_bank" class="form-label">Rekening Bank</label>
+          <input
+            type="text"
+            id="rek_bank"
+            class="form-control"
+            placeholder="Rekening Bank"
+            [formControl]="rekBank"
+            (keyup.enter)="tambahRek()"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="nama" class="form-label">Nama</label>
+          <input
+            type="text"
+            id="nama"
+            class="form-control"
+            placeholder="Nama"
+            [formControl]="namaUser"
+            (keyup.enter)="tambahRek()"
+          />
+        </div>
+        <div class="alert alert-success" *ngIf="sukses">
+          Sukses Tambah Rekening
+        </div>
+        <div class="alert alert-success" *ngIf="gagal">
+          Gagal Tambah Rekening
+        </div>
+        <button
+          class="btn btn-primary btn-block"
+          (click)="tambahRek()"
+          [disabled]="
+            !this.bankInfo.value || !this.rekBank.value || !this.namaUser.value
+          "
+        >
+          Tambah Rekening
+        </button>
+      </div>
+    </div>
+  </div>
+  <div
+    class="col-xl-6 col-lg-6 col-md-6 col-sm-12 mb-sm-3 mb-3 mb-xl-0 mb-md-0"
+  >
+    <div class="card shadow">
+      <div class="card-body">
+        <ng-container *ngIf="loading">
+          <div>Loading...</div>
+        </ng-container>
+        <ng-container *ngIf="!bankListUser && !loading">
+          <h5>Tidak ada Bank.</h5>
+        </ng-container>
+        <ng-container *ngIf="bankListUser && !loading">
+          <h5 class="mb-3">Bank List</h5>
+          <div class="bank_list">
+            <ng-container *ngFor="let a of bankListUser">
+              <div class="bank_info">
+                <ul>
+                  <li><strong>Type:</strong> {{ a.data.type }}</li>
+                  <li><strong>Nama:</strong> {{ a.data.username }}</li>
+                  <li><strong>Nama Bank:</strong> {{ a.data.name }}</li>
+                  <li><strong>Nomor Rekening:</strong> {{ a.data.value }}</li>
+                </ul>
+                <button
+                  class="btn btn-danger btn-sm"
+                  [disabled]="loadingDelete"
+                  (click)="deleteBank(a.id)"
+                >
+                  Hapus
+                </button>
+              </div>
+            </ng-container>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

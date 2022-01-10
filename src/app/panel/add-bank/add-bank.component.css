@@ -1,0 +1,19 @@
+.bank_list li {
+  list-style: none;
+  padding-left: 10px;
+  border-left: 3px solid rgb(83, 177, 253);
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.bank_list ul {
+  margin-bottom: 10px;
+  padding-left: 0;
+}
+
+.bank_list .bank_info {
+  padding: 15px;
+  background: #eee;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}

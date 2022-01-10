@@ -1,0 +1,86 @@
+.adm_chat_list {
+  overflow: auto;
+  height: 500px;
+}
+
+.image_pesan {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.image_pesan img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.info_pesan {
+  font-size: 13px;
+}
+
+.bottom-bar {
+  height: 60px;
+}
+
+.form_pesan {
+  box-sizing: border-box;
+  padding: 10px;
+}
+
+.kirim_pesan {
+  border: none;
+  background: #3f9af0;
+}
+
+.image_upload {
+  background: #ff5a5a;
+  color: #fff;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+.image_upload_preview {
+  bottom: 100%;
+  left: 0;
+  width: 100%;
+  position: absolute;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.image_upload_preview .image-list {
+  overflow-x: auto;
+}
+
+.image_upload_preview .image-list img {
+  height: 100px;
+  width: auto;
+}
+.image_upload_preview .image-list .image {
+  position: relative;
+  margin-right: 10px;
+}
+
+.image_upload_preview .image-list .image .cancel {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  color: #fff;
+  background: #ff5858;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.close-all {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  background: rgb(247, 55, 55);
+  color: #fff;
+  padding: 5px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}

@@ -1,0 +1,127 @@
+<h1 class="h3 mb-4 text-gray-800">Info Undangan</h1>
+<h2 class="h5 mb-4 text-gray-800">
+  Undangan ID#<strong class="text-gray-600">{{ current_id }}</strong>
+</h2>
+
+<div class="row mb-4">
+  <div class="col-8 mx-auto">
+    <ng-container *ngIf="undanganInfo">
+      <ng-container *ngIf="undanganInfo.data.status == 1">
+        <div class="bg-white p-3 mb-3 text-center">
+          <h1 class="text-success">DITERIMA</h1>
+          <div class="alert alert-success mb-0">
+            Undangan telah diterima pada tanggal
+            {{ undanganInfo.data.updateAction | convertDate }}
+          </div>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="undanganInfo.data.status == 2">
+        <div class="bg-white p-3 mb-3 text-center">
+          <h1 class="text-danger">DITOLAK</h1>
+          <div class="alert alert-danger mb-0">
+            Undangan telah ditolak pada tanggal
+            {{ undanganInfo.data.updateAction | convertDate }}
+          </div>
+        </div>
+      </ng-container>
+      <ng-container
+        *ngIf="
+          undanganInfo.data.status == 0 &&
+          (undanganInfo.transaksi.uid_pembeli ||
+            undanganInfo.transaksi.status != 'active')
+        "
+      >
+        <div class="bg-white p-3 mb-3 text-center">
+          <h1 class="text-danger">TRANSAKSI TIDAK VALID</h1>
+        </div>
+      </ng-container>
+    </ng-container>
+    <div class="bg-white p-3">
+      <app-loading [error]="" [loading]="loading"></app-loading>
+      <ng-container *ngIf="undanganInfo">
+        <ng-container
+          *ngIf="
+            undanganInfo.data.status == 0 &&
+            undanganInfo.transaksi.status == 'active' &&
+            !undanganInfo.transaksi.uid_pembeli
+          "
+        >
+          <div class="d-flex">
+            <div class="btn btn-primary mr-1" (click)="aksiUndangan(1)">
+              Terima
+            </div>
+            <div class="btn btn-danger ml-1" (click)="aksiUndangan(2)">
+              Tolak
+            </div>
+          </div>
+          <hr />
+        </ng-container>
+        Anda diundang pada
+        <strong>{{ undanganInfo.data.date | convertDate }}</strong>
+        <hr />
+        <div class="info-profile">
+          <h5 class="mb-3">Profile Penjual</h5>
+          <table>
+            <tr>
+              <td><strong>Email</strong></td>
+              <td>{{ undanganInfo.penjual.email }}</td>
+            </tr>
+            <tr>
+              <td><strong>Nama</strong></td>
+              <td>{{ undanganInfo.penjual.fullName }}</td>
+            </tr>
+            <tr>
+              <td><strong>Tanggal Bergabung</strong></td>
+              <td>{{ undanganInfo.penjual.timestampCreate | convertDate }}</td>
+            </tr>
+          </table>
+        </div>
+        <div class="informasi_transaksi">
+          <h5>Detail Transaksi</h5>
+          <table class="mb-3">
+            <tr>
+              <td>Judul</td>
+              <td>{{ undanganInfo.transaksi.judul }}</td>
+            </tr>
+            <tr>
+              <td>Nama Barang</td>
+              <td>{{ undanganInfo.transaksi.nama_barang }}</td>
+            </tr>
+            <tr>
+              <td>Jenis Barang</td>
+              <td>{{ undanganInfo.transaksi.jenis_barang }}</td>
+            </tr>
+            <tr>
+              <td>Harga</td>
+              <td>{{ undanganInfo.transaksi.harga | convertIdr }}</td>
+            </tr>
+            <tr>
+              <td>Biaya Admin</td>
+              <td>{{ undanganInfo.transaksi.fee | convertIdr }}</td>
+            </tr>
+            <tr>
+              <td>Total Bayar</td>
+              <td>{{ undanganInfo.transaksi.total_bayar | convertIdr }}</td>
+            </tr>
+            <tr>
+              <td>Durasi Transaksi</td>
+              <td>{{ undanganInfo.transaksi.durasi }} Hari</td>
+            </tr>
+            <tr>
+              <td>Tanggal Dibuat</td>
+              <td>{{ undanganInfo.transaksi.create | convertDate }}</td>
+            </tr>
+          </table>
+          <div class="font-weight-bold mb-2">Deskripsi Barang</div>
+          <div class="alert alert-secondary">
+            {{ undanganInfo.transaksi.deskripsi_barang }}
+          </div>
+          <div class="font-weight-bold mb-2">Syarat Transaksi Selesai</div>
+          <div class="alert alert-warning mb-0">
+            {{ undanganInfo.transaksi.syarat_trx_selesai }}
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>

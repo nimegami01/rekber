@@ -1,0 +1,91 @@
+<h1 class="h3 mb-4 text-gray-800">Request Transaksi Selesai</h1>
+
+<div class="card shadow mb-4">
+  <div class="card-body">
+    <!-- Loading -->
+    <app-loading
+      [loading]="!transaksi.length && !loadingDone"
+      [error]=""
+    ></app-loading>
+
+    <ng-container *ngIf="transaksi.length">
+      <div class="container-post-list">
+        <div
+          class="container_post"
+          *ngFor="let a of transaksi"
+          [routerLink]="['/admin/admin-chat', a.data.id]"
+        >
+          <h3 class="p-3 m-0">{{ a.data.judul }}</h3>
+          <div class="info-post">
+            <ul class="pl-0 mb-0">
+              <li>
+                <div class="d-flex align-items-center">
+                  <strong>Status:</strong>
+                  <i
+                    class="fas fa-circle indicator text-success mx-2"
+                    [ngClass]="{
+                      'text-success':
+                        a.data.status == 'active' &&
+                        a.data.uid_penjual &&
+                        a.data.uid_pembeli,
+                      'text-danger': a.data.status == 'failed',
+                      'text-secondary': a.data.status == 'cancel',
+                      'text-primary': a.data.status == 'success',
+                      'text-warning':
+                        a.data.status == 'active' &&
+                        (!a.data.uid_penjual || !a.data.uid_pembeli)
+                    }"
+                  ></i>
+                  {{
+                    !a.data.uid_pembeli || !a.data.uid_penjual
+                      ? "Pending"
+                      : a.data.statusText
+                  }}
+                </div>
+              </li>
+              <li><strong>Harga:</strong> {{ a.data.harga | convertIdr }}</li>
+              <li>
+                <strong>Dibuat:</strong>
+                {{ a.data.create | convertDate }}
+              </li>
+              <li
+                *ngIf="
+                  a.data.expired && a.data.uid_pembeli && a.data.uid_penjual
+                "
+              >
+                <strong>Expired:</strong>
+                {{ a.data.expired | convertDate }}
+              </li>
+              <li
+                *ngIf="
+                  a.data.status == 'active' &&
+                  (!a.data.uid_pembeli || !a.data.uid_penjual)
+                "
+              >
+                <strong>Durasi:</strong>
+                {{ a.data.durasi }} Hari
+              </li>
+              <li *ngIf="a.penjual">
+                <strong>Penjual:</strong>
+                {{ a.penjual.email }}
+              </li>
+              <li *ngIf="a.pembeli">
+                <strong>Pembeli:</strong>
+                {{ a.pembeli.email }}
+              </li>
+            </ul>
+          </div>
+          <div
+            class="alert alert-warning m-0 alert-pending"
+            *ngIf="
+              a.data.status == 'active' &&
+              (!a.data.uid_pembeli || !a.data.uid_penjual)
+            "
+          >
+            Jika berstatus pending, tanggal expired belum dihitung.
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

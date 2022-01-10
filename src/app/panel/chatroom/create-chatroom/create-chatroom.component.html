@@ -1,0 +1,192 @@
+<h1 class="h3 mb-4 text-gray-800">Buat Transaksi Baru</h1>
+
+<app-loading [loading]="loading" [error]="error"></app-loading>
+
+<div class="alert alert-warning" *ngIf="!bankList.length">
+  <h5>Tidak Dapat Membuat Transaksi</h5>
+  <p>
+    Rekening tidak ditemukan, silahkan
+    <a [routerLink]="['/user', 'add-bank']">Tambah Rekening</a> terlebih dahulu
+    untuk membuat transaksi baru.
+  </p>
+</div>
+
+<ng-container *ngIf="!loading && !error && bankList.length">
+  <div class="alert alert-info">
+    <div class="font-weight-bold mb-2">Informasi</div>
+    <ul class="mb-0">
+      <li>Transaksi dibawah 100k akan dikenai biaya admin Rp. 7.000,00.</li>
+      <li>
+        Transaksi diatas 100k setiap kelipatan 100k akan dikenai biaya admin Rp.
+        5.000,00.
+      </li>
+    </ul>
+  </div>
+
+  <div class="card shadow">
+    <div class="card-body" [formGroup]="form_create">
+      <div class="row mb-2">
+        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12">
+          <div class="mb-3">
+            <label for="judul" class="form-label">Judul Transaksi</label>
+            <input
+              type="text"
+              class="form-control"
+              id="judul"
+              placeholder="Judul Transaksi"
+              formControlName="judul"
+              [attr.disabled]="loadingCreate ? '' : null"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="nama_barang" class="form-label">Nama Barang</label>
+            <input
+              type="text"
+              class="form-control"
+              id="nama_barang"
+              placeholder="Nama Barang"
+              formControlName="nama_barang"
+              [attr.disabled]="loadingCreate ? '' : null"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="jenis_barang">Jenis Barang</label>
+            <select
+              class="custom-select"
+              id="jenis_barang"
+              formControlName="jenis_barang"
+              [disabled]="loadingCreate"
+            >
+              <option value="digital">Digital</option>
+              <option value="fisik">Fisik</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="harga" class="form-label">Harga</label>
+            <input
+              type="number"
+              class="form-control mb-2"
+              id="harga"
+              placeholder="Harga"
+              formControlName="harga_barang"
+              [attr.disabled]="loadingCreate ? '' : null"
+            />
+            <div class="harga_convert mb-2">
+              {{ form_create.value.harga_barang | convertIdr }}
+            </div>
+            <div class="harga_set">
+              <div class="fee">
+                Biaya Admin:
+                {{
+                  form_create.value.harga_barang
+                    | biayaAdmin: "fee"
+                    | convertIdr
+                }}
+              </div>
+              <div class="total">
+                Total Bayar:
+                <span class="font-weight-bold">
+                  {{
+                    form_create.value.harga_barang
+                      | biayaAdmin: "total"
+                      | convertIdr
+                  }}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="durasi" class="form-label"
+              >Estimasi Durasi Transaksi</label
+            >
+            <div class="select">
+              <select
+                class="custom-select"
+                id="jenis_barang"
+                formControlName="duration"
+              >
+                <option *ngFor="let a of duration.duration" [value]="a">
+                  {{ a + " " + duration.duration_name }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12">
+          <div class="mb-3">
+            <label for="deskripsi_barang" class="form-label"
+              >Deskripsi Barang</label
+            >
+            <textarea
+              class="form-control"
+              id="deskripsi_barang"
+              rows="4"
+              placeholder="Contoh: akun Google Adsense + domain"
+              formControlName="deskripsi"
+              [disabled]="loadingCreate"
+            ></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="syarat_trx_berhasil" class="form-label"
+              >Syarat Transaksi Telah Selesai</label
+            >
+            <textarea
+              class="form-control"
+              id="deskripsi_barang"
+              rows="4"
+              placeholder="Contoh: barang sudah di terima oleh pembeli dan dicek kelengkapannya."
+              formControlName="syarat"
+              [disabled]="loadingCreate"
+            ></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="pilih_rek" class="form-label">Akun Rekening</label>
+            <div class="alert alert-warning">
+              Pilih akun rekening yang digunakan untuk pembayaran saat transaksi
+              selesai.
+            </div>
+            <select
+              class="custom-select"
+              id="pilih_rek"
+              formControlName="id_akun_rek"
+              [disabled]="loadingCreate"
+            >
+              <ng-container *ngFor="let a of bankList">
+                <option [value]="a.id">
+                  {{ a.data.name }}: {{ a.data.value }} - {{ a.data.type }}
+                </option>
+              </ng-container>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="alert alert-danger" *ngIf="msgError">
+        {{ msgError }}
+      </div>
+      <div class="row">
+        <div
+          class="
+            col-xl-6 col-lg-6 col-md-6 col-sm-12
+            mb-sm-3 mb-3 mb-xl-0 mb-md-0
+          "
+        >
+          <div class="btn btn-primary btn-block">Draft</div>
+        </div>
+        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+          <button
+            class="btn btn-success btn-block"
+            (click)="createNewTransaction()"
+          >
+            <span
+              class="spinner-border spinner-border-sm"
+              role="status"
+              aria-hidden="true"
+              *ngIf="loadingCreate"
+            ></span>
+            Buat Transaksi
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>

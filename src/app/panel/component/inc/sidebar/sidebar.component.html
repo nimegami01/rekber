@@ -1,0 +1,136 @@
+<!-- Sidebar -->
+<ul
+  class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion"
+  id="accordionSidebar"
+>
+  <!-- Sidebar - Brand -->
+  <a
+    class="
+      sidebar-brand
+      d-flex
+      align-items-center
+      position-relative
+      justify-content-center
+    "
+    [routerLink]="['/user/dashboard']"
+  >
+    <div class="sidebar-brand-icon rotate-n-15 sidebar-brand-icon-mobile">
+      <i class="far fa-registered"></i>
+    </div>
+    <div
+      class="sidebar-brand-icon rotate-n-15 sidebar-brand-icon-mobile-hide"
+      *ngIf="!sidebarToggleStatus"
+    >
+      <i class="far fa-registered"></i>
+    </div>
+    <div class="sidebar-brand-text brand-image" *ngIf="sidebarToggleStatus">
+      <img src="../../../../assets/image/Rekber Logo White.png" />
+    </div>
+  </a>
+
+  <!-- Divider -->
+  <hr class="sidebar-divider my-0" />
+
+  <!-- Nav Item - Dashboard -->
+  <li class="nav-item active">
+    <a class="nav-link" [routerLink]="['/user/dashboard']">
+      <i class="fas fa-th-large"></i>
+      <span>Dashboard</span></a
+    >
+  </li>
+
+  <!-- Nav Item - Undangan -->
+  <li class="nav-item">
+    <a class="nav-link" [routerLink]="['/user/undangan/list']">
+      <i class="fas fa-envelope"></i>
+      <span>Undangan</span></a
+    >
+  </li>
+
+  <!-- Divider -->
+  <hr class="sidebar-divider" />
+
+  <!-- Heading -->
+  <div class="sidebar-heading">Chatroom</div>
+
+  <!-- Nav Item - Tables -->
+  <li class="nav-item">
+    <a class="nav-link" [routerLink]="['/user/transaksi-baru']">
+      <i class="fas fa-plus"></i>
+      <span>Buat Transaksi</span></a
+    >
+  </li>
+
+  <!-- Divider -->
+  <hr class="sidebar-divider" />
+
+  <!-- Heading -->
+  <div class="sidebar-heading">PENGATURAN</div>
+
+  <!-- Nav Item - Tables -->
+  <li class="nav-item">
+    <a class="nav-link" [routerLink]="['/user/add-bank']">
+      <i class="fas fa-plus"></i>
+      <span>Tambah Rekening</span></a
+    >
+  </li>
+
+  <!-- Divider -->
+  <hr class="sidebar-divider d-none d-md-block" />
+
+  <ng-container *ngIf="adminMenu">
+    <!-- Heading -->
+    <div class="sidebar-heading">Admin</div>
+
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="['/admin', 'validasi-pembayaran']">
+        <i class="fas fa-money-bill-wave"></i>
+        <span>Validasi Pembayaran</span></a
+      >
+    </li>
+
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        [routerLink]="['/admin', 'semua-transaksi', 'transaksi']"
+      >
+        <i class="fas fa-align-justify"></i>
+        <span>Semua Transaksi</span></a
+      >
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="['/admin', 'req-trx-selesai']">
+        <i class="fas fa-cog"></i>
+        <span>Request Transaksi Selesai</span></a
+      >
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="['/admin', 'req-pembatalan']">
+        <i class="fas fa-cog"></i>
+        <span>Request Pembatalan</span></a
+      >
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="['/admin', 'req-perpanjang']">
+        <i class="fas fa-cog"></i>
+        <span>Request Perpanjang Transaksi</span></a
+      >
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider d-none d-md-block" />
+  </ng-container>
+
+  <!-- Sidebar Toggler (Sidebar) -->
+  <div class="text-center d-none d-md-inline">
+    <button
+      class="rounded-circle border-0"
+      (click)="toggleSidebar()"
+      id="sidebarToggle"
+    ></button>
+  </div>
+</ul>
+<!-- End of Sidebar -->

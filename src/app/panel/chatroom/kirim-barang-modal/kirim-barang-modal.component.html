@@ -1,0 +1,120 @@
+<div class="modal-header align-items-center">
+  <h5 class="modal-title font-weight-bold pull-left mb-0">Kirim Barang</h5>
+  <button
+    type="button"
+    class="close pull-right"
+    aria-label="Close"
+    (click)="bsModalRef.hide()"
+  >
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body" *ngIf="transaksi">
+  <ng-container *ngIf="transaksi.status == 'active'">
+    <!-- Kirim Barang -->
+    <div class="form-group">
+      <div class="mb-3">
+        <label for="barang" class="judul_jenis_barang"
+          >Barang {{ transaksi.jenis_barang }}</label
+        >
+        <div class="alert alert-warning">
+          <ng-container *ngIf="transaksi.jenis_barang == 'digital'">
+            Silahkan tuliskan informasi barang digital anda dibawah ini. Jika
+            berupa file, silahkan upload terlebih dahulu ke Google Drive atau
+            layanan cloud lainnya, lalu salin linknya dan tempelkan pada kolom
+            isian dibawah ini.
+          </ng-container>
+          <ng-container *ngIf="transaksi.jenis_barang == 'fisik'">
+            Masukkan resi beserta jasa pengirim di bawah ini.
+          </ng-container>
+        </div>
+        <div class="alert alert-danger" *ngIf="statusPembayaran != 2">
+          {{
+            transaksi.jenis_barang == "digital"
+              ? statusPembayaran == 1
+                ? "Pembayaran belum diverifikasi, anda tidak dapat mengirim barang digital."
+                : "Pembeli belum mengirim pembayaran, anda tidak dapat mengirim barang digital."
+              : transaksi.jenis_barang == "fisik"
+              ? statusPembayaran == 1
+                ? "Pembayaran belum diverifikasi, jangan kirim barang terlebih dahulu."
+                : "Pembeli belum mengirim pembayaran, jangan kirim barang terlebih dahulu."
+              : "Error bro"
+          }}
+        </div>
+        <textarea
+          *ngIf="transaksi.jenis_barang == 'digital'"
+          class="form-control"
+          [placeholder]="
+            'Contoh: \nAkun Adsense: ... \nAkun hosting: ... \nAkun domain: ..'
+          "
+          id="barang"
+          rows="4"
+          [formControl]="informasiBarang"
+        ></textarea>
+        <textarea
+          *ngIf="transaksi.jenis_barang == 'fisik'"
+          class="form-control"
+          [placeholder]="
+            'Contoh: \nNomor Resi: ... \nJasa Pengiriman: JNT/JNE/dsb..'
+          "
+          id="barang"
+          rows="4"
+          [formControl]="informasiBarang"
+        ></textarea>
+      </div>
+      <label for="catatan_tambahan">Catatan Tambahan</label>
+      <textarea
+        class="form-control"
+        placeholder="Jika memiliki catatan tambahan, silahkan tulis disini."
+        id="catatan_tambahan"
+        rows="3"
+        [formControl]="catatanTambahan"
+      ></textarea>
+    </div>
+    <!-- End Kirim Barang -->
+    <!-- Button kirim barang -->
+    <div class="mb-3">
+      <button
+        type="button"
+        class="btn btn-primary"
+        [disabled]="!informasiBarang.value || statusPembayaran != 2"
+        (click)="kirimBarang()"
+      >
+        Kirim
+      </button>
+    </div>
+    <!-- End Button kirim barang -->
+  </ng-container>
+  <!-- Riwayat -->
+  <ng-container *ngIf="riwayatInfoBarang.length">
+    <div class="riwayat_edit_title mb-3">Riwayat Kirim Barang</div>
+    <ng-container *ngFor="let a of riwayatInfoBarang">
+      <div class="container_riwayat">
+        <div class="alert alert-secondary mb-2">
+          <div class="font-weight-bold">ID#{{ a.id }}</div>
+        </div>
+        <div class="info">
+          <div class="mb-2">
+            <strong>Tanggal : </strong> {{ a.data.date | convertDate }}
+          </div>
+          <div>
+            <div class="title_alasan mb-2">Info Barang</div>
+            <div class="alert alert-success mb-2">
+              <pre>{{ a.data.info_barang }}</pre>
+            </div>
+          </div>
+          <div>
+            <div class="title_alasan mb-2">Alasan</div>
+            <div class="alert alert-success mb-0">{{ a.data.alasan }}</div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </ng-container>
+  <!-- End Riwayat -->
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-danger" (click)="bsModalRef.hide()">
+    Tutup
+  </button>
+</div>

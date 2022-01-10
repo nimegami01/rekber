@@ -1,0 +1,30 @@
+.judul_jenis_barang {
+  text-transform: capitalize;
+}
+
+.riwayat_edit_title {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.info {
+  font-size: 15px;
+}
+
+.container_riwayat {
+  padding-left: 15px;
+  border-left: 3px solid rgb(106, 189, 245);
+  margin-bottom: 20px;
+}
+
+.container_riwayat:last-child {
+  margin-bottom: 0;
+}
+
+.info .alert {
+  font-size: 14px;
+}
+
+.info .alert pre {
+  margin-bottom: 0;
+}

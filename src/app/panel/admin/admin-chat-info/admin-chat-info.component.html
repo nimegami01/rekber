@@ -1,0 +1,302 @@
+<h1 class="h3 mb-4 text-gray-800">Transaksi ID: {{ id_transaksi }}</h1>
+
+<table class="table" *ngIf="detail">
+  <tr>
+    <td>Status:</td>
+    <td>
+      <i
+        class="fas fa-circle mr-2"
+        [ngClass]="{
+          'text-success':
+            detail.status == 'active' &&
+            detail.uid_penjual &&
+            detail.uid_pembeli,
+          'text-danger': detail.status == 'failed',
+          'text-secondary': detail.status == 'cancel',
+          'text-primary': detail.status == 'success',
+          'text-warning':
+            detail.status == 'active' &&
+            (!detail.uid_penjual || !detail.uid_pembeli)
+        }"
+      ></i>
+      {{
+        detail.status == "active" &&
+        (!detail.uid_penjual || !detail.uid_pembeli)
+          ? "Pending"
+          : modalExpired && detail.status == "active"
+          ? "Open | Expired"
+          : detail.statusText
+      }}
+      <span class="btn btn-danger" *ngIf="!modalExpired">{{
+        expired_cooldown
+      }}</span>
+    </td>
+  </tr>
+  <tr>
+    <td>Start:</td>
+    <td>{{ detail.create | convertDate }}</td>
+  </tr>
+  <tr>
+    <td>End:</td>
+    <td>{{ detail.expired | convertDate }}</td>
+  </tr>
+  <tr>
+    <td>Judul:</td>
+    <td>{{ detail.judul }}</td>
+  </tr>
+  <tr>
+    <td>Deskripsi Barang:</td>
+    <td>{{ detail.deskripsi_barang }}</td>
+  </tr>
+</table>
+
+<div class="overflow-hidden mb-3">
+  <button class="float-right btn btn-primary" (click)="infoModal()">
+    Selengkapnya
+  </button>
+</div>
+
+<hr />
+
+<div class="h5 mb-4 text-gray-800">Persetujuan</div>
+
+<table class="table text-center" *ngIf="detail">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">Pembeli</th>
+      <th scope="col">Penjual</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <span
+          *ngIf="detail.persetujuan_pembeli"
+          class="text-success font-weight-bold"
+        >
+          <i class="fas fa-check"></i> Setuju
+        </span>
+        <span
+          *ngIf="!detail.persetujuan_pembeli"
+          class="text-danger font-weight-bold"
+        >
+          <i class="fas fa-times"></i> Belum Setuju
+        </span>
+      </td>
+      <td>
+        <span
+          *ngIf="detail.persetujuan_penjual"
+          class="text-success font-weight-bold"
+        >
+          <i class="fas fa-check"></i> Setuju
+        </span>
+        <span
+          *ngIf="!detail.persetujuan_penjual"
+          class="text-danger font-weight-bold"
+        >
+          <i class="fas fa-times"></i> Belum Setuju
+        </span>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<button class="btn btn-primary" (click)="lihatBarangModal()">
+  Lihat Barang
+</button>
+
+<hr />
+
+<div class="h5 mb-4 text-gray-800">Aksi Admin</div>
+
+<div class="row mb-4" *ngIf="detail">
+  <div class="col-3">
+    <button
+      class="btn btn-success btn-block"
+      [disabled]="loadingActionAdmin || detail.status == 'active'"
+      (click)="actionAdmin('active')"
+    >
+      Aktifkan
+    </button>
+  </div>
+  <div class="col-3">
+    <button
+      class="btn btn-danger btn-block"
+      [disabled]="loadingActionAdmin || detail.status == 'failed'"
+      (click)="actionAdmin('failed')"
+    >
+      Gagalkan
+    </button>
+  </div>
+  <div class="col-3">
+    <button
+      class="btn btn-warning btn-block"
+      [disabled]="loadingActionAdmin || detail.status == 'cancel'"
+      (click)="actionAdmin('cancel')"
+    >
+      Batalkan
+    </button>
+  </div>
+  <div class="col-3">
+    <button
+      class="btn btn-primary btn-block"
+      [disabled]="loadingActionAdmin || detail.status == 'success'"
+      (click)="actionAdmin('success')"
+    >
+      Sukses
+    </button>
+  </div>
+</div>
+
+<div class="adm_chat_list" #scrollMessage>
+  <div class="m-2">
+    <ng-container *ngFor="let a of chatListData">
+      <div class="card shadow mb-2">
+        <div
+          class="
+            card-header
+            py-3
+            d-flex
+            flex-row
+            align-items-center
+            justify-content-between
+          "
+          [ngClass]="{
+            'bg-info': a.role == 'system',
+            'bg-primary': a.role == 'Penjual',
+            'bg-secondary': a.role == 'Pembeli',
+            'bg-warning': !a.role || a.role == 'admin'
+          }"
+        >
+          <h6 class="m-0 font-weight-bold text-white">
+            {{
+              a.role
+                ? a.role == "system"
+                  ? "Sistem"
+                  : a.role == "admin"
+                  ? "Admin"
+                  : a.role
+                : "?"
+            }}
+          </h6>
+        </div>
+        <div class="card-body">
+          <ul class="info_pesan">
+            <li>Status: {{ a.status }}</li>
+            <li>Date: {{ a.date | convertToAgo }}</li>
+          </ul>
+          <div class="pesan">
+            <pre class="mb-0" [innerHTML]="a.pesan"></pre>
+            <ng-container *ngIf="a.image">
+              <div class="image_pesan mb-3">
+                <a *ngFor="let img of a.image" [href]="img" target="_blank">
+                  <img [src]="img" />
+                </a>
+              </div>
+            </ng-container>
+            <div class="alert alert-secondary mb-0" *ngIf="a.pesan_sistem">
+              {{ a.pesan_sistem }}
+            </div>
+            <ng-container *ngIf="a.role != 'system' && a.role != 'admin'">
+              <div
+                class="pt-3"
+                style="border-top: 1px solid #ddd"
+                *ngIf="a.notif"
+              >
+                <div class="alert alert-danger">
+                  <strong>Notif : </strong>{{ a.notif }}
+                </div>
+              </div>
+              <div class="text-right pt-3" style="border-top: 1px solid #ddd">
+                <button
+                  class="btn btn-sm btn-danger"
+                  (click)="actionModal(a.chatid)"
+                >
+                  Action
+                </button>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
+<!-- Bottom Bar -->
+<div class="bottom-bar row position-relative" #container_bottom_bar>
+  <textarea
+    placeholder="Tulis pesan.."
+    [formControl]="form_pesan"
+    (keydown.enter)="kirimPesan()"
+    class="col-lg-10"
+  ></textarea>
+  <div
+    class="
+      image_upload
+      d-flex
+      justify-content-center
+      align-items-center
+      col-lg-1 col-md-6 col-sm-6
+    "
+    #image_upload
+    (click)="file_upload.click()"
+  >
+    <i class="fas fa-image"></i>
+  </div>
+  <button
+    class="
+      kirim_pesan
+      text-white
+      d-flex
+      justify-content-center
+      align-items-center
+      font-weight-bold
+      col-lg-1 col-md-6 col-sm-6
+    "
+    #kirim_pesan
+    (click)="kirimPesan()"
+  >
+    KIRIM
+  </button>
+  <!-- Image Upload Preview -->
+  <ng-container *ngIf="imagePreview.length">
+    <div class="image_upload_preview">
+      <div class="image-list d-flex flex-row position-relative mb-2">
+        <div class="image" *ngFor="let a of imagePreview; let i = index">
+          <img [src]="a" />
+          <div
+            class="cancel d-flex justify-content-center align-items-center"
+            (click)="removeImageFromList(i)"
+          >
+            <i class="fas fa-times"></i>
+          </div>
+        </div>
+      </div>
+      <div class="progress" *ngIf="loadingImage">
+        <div
+          class="progress-bar progress-bar-striped progress-bar-animated"
+          role="progressbar"
+          aria-valuenow="100"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          style="width: 100%"
+        ></div>
+      </div>
+      <div class="close-all" (click)="tutupSemuaImage()">
+        Tutup <i class="fas fa-times ml-2"></i>
+      </div>
+    </div>
+  </ng-container>
+  <!-- End Image Upload Preview -->
+</div>
+<!-- End Bottom Bar -->
+<input
+  style="display: none"
+  type="file"
+  #file_upload
+  (change)="imageSelected($event)"
+  multiple
+  accept="image/*"
+/>

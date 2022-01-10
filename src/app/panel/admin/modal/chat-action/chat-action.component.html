@@ -1,0 +1,31 @@
+<div class="modal-header align-items-center">
+  <h5 class="modal-title font-weight-bold pull-left mb-0">
+    Atur Pesan ID: {{ info.id }}
+  </h5>
+</div>
+<div class="modal-body">
+  <div class="alert alert-secondary" *ngIf="info.data">
+    <div>
+      <strong>Pesan:</strong>
+    </div>
+    {{ info.data.pesan }}
+  </div>
+  <div class="mb-3">
+    <textarea
+      class="form-control"
+      [placeholder]="'Isi Notif..'"
+      rows="4"
+      [formControl]="notif"
+    ></textarea>
+  </div>
+  <button class="btn btn-primary" (click)="updateNotif()">Simpan Notif</button>
+  <hr />
+  <button class="btn btn-danger" (click)="updateStatus()">
+    {{ info.data.status == "show" ? "Sembunyikan Pesan" : "Munculkan Pesan" }}
+  </button>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-danger" (click)="bsModalRef.hide()">
+    Tutup
+  </button>
+</div>

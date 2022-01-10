@@ -1,0 +1,201 @@
+<h1 class="h3 mb-4 text-gray-800">
+  <span [innerHTML]="baseTitle"></span>
+</h1>
+
+<div class="mb-3">
+  <div class="input-group mb-3">
+    <input
+      type="text"
+      class="form-control mr-2"
+      placeholder="Masukkan Nama Transaksi / Nama Barang / ID"
+      [formControl]="searchValue"
+      (keyup.enter)="search()"
+    />
+    <button class="btn btn-primary" type="button" (click)="search()">
+      Cari
+    </button>
+  </div>
+</div>
+<div class="row">
+  <div class="col-4">
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <label class="input-group-text" for="inputGroupSelect01">Status</label>
+      </div>
+      <select
+        class="custom-select"
+        id="inputGroupSelect01"
+        [formControl]="statusValue"
+        (ngModelChange)="search()"
+      >
+        <option selected value="all">All</option>
+        <option value="open">Open</option>
+        <option value="pending">Pending</option>
+        <option value="success">Success</option>
+        <option value="failed">Failed</option>
+        <option value="cancel">Cancel</option>
+      </select>
+    </div>
+  </div>
+  <div class="col-4">
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <label class="input-group-text" for="inputGroupSelect02">Type</label>
+      </div>
+      <select
+        class="custom-select"
+        id="inputGroupSelect02"
+        [formControl]="typeValue"
+        (ngModelChange)="search()"
+      >
+        <option selected value="all">All</option>
+        <option value="barang_fisik">Barang Fisik</option>
+        <option value="barang_digital">Barang Digital</option>
+      </select>
+    </div>
+  </div>
+  <div class="col-4">
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <label class="input-group-text" for="inputGroupSelect03">Role</label>
+      </div>
+      <select
+        class="custom-select"
+        id="inputGroupSelect03"
+        [formControl]="roleValue"
+        (ngModelChange)="search()"
+      >
+        <option selected value="all">All</option>
+        <option value="penjual">Penjual</option>
+        <option value="pembeli">Pembeli</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="card shadow mb-4">
+  <div
+    class="
+      card-header
+      py-3
+      d-flex
+      flex-row
+      align-items-center
+      justify-content-between
+    "
+  >
+    <h6 class="m-0 font-weight-bold text-primary">
+      {{ search_count_result }} hasil Pencarian {{ searchValue.value }}
+    </h6>
+  </div>
+  <div class="card-body">
+    <!-- Loading -->
+    <app-loading [loading]="loading" [error]=""></app-loading>
+
+    <ng-container *ngIf="search_count_result == 0 && !loading">
+      <div class="text-center p-4 text-primary">
+        <h5 class="m-0">Transaksi Yang Anda Cari Tidak Ditemukan.</h5>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="search_result">
+      <div class="container-post-list">
+        <div
+          class="container_post"
+          *ngFor="let a of search_result"
+          [routerLink]="['/user/transaksi', a.data.id]"
+        >
+          <h3 class="p-3 m-0">{{ a.data.judul }}</h3>
+          <div class="alert-post row">
+            <div class="col-6">
+              <div class="role_kamu">
+                Kamu Sebagai
+                <strong>
+                  {{
+                    a.data.uid_penjual == current_uid
+                      ? "Penjual"
+                      : a.data.uid_pembeli == current_uid
+                      ? "Pembeli"
+                      : ""
+                  }}
+                </strong>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="role_name">
+                <ng-container *ngIf="a.data.uid_penjual != current_uid">
+                  <strong>Penjual:</strong>
+                  {{ a.penjual ? a.penjual.email : " - " }}
+                </ng-container>
+                <ng-container *ngIf="a.data.uid_pembeli != current_uid">
+                  <strong>Pembeli:</strong>
+                  {{ a.pembeli ? a.pembeli.email : " - " }}
+                </ng-container>
+              </div>
+            </div>
+          </div>
+          <div class="info-post">
+            <ul class="pl-0 mb-0">
+              <li>
+                <div class="d-flex align-items-center">
+                  <strong>Status:</strong>
+                  <i
+                    class="fas fa-circle indicator text-success mx-2"
+                    [ngClass]="{
+                      'text-success':
+                        a.data.status == 'active' &&
+                        a.data.uid_penjual &&
+                        a.data.uid_pembeli,
+                      'text-danger': a.data.status == 'failed',
+                      'text-secondary': a.data.status == 'cancel',
+                      'text-primary': a.data.status == 'success',
+                      'text-warning':
+                        a.data.status == 'active' &&
+                        (!a.data.uid_penjual || !a.data.uid_pembeli)
+                    }"
+                  ></i>
+                  {{
+                    !a.data.uid_pembeli || !a.data.uid_penjual
+                      ? "Pending"
+                      : a.data.statusText
+                  }}
+                </div>
+              </li>
+              <li><strong>Harga:</strong> {{ a.data.harga | convertIdr }}</li>
+              <li>
+                <strong>Dibuat:</strong>
+                {{ a.data.create | convertDate }}
+              </li>
+              <li
+                *ngIf="
+                  a.data.expired && a.data.uid_pembeli && a.data.uid_penjual
+                "
+              >
+                <strong>Expired:</strong>
+                {{ a.data.expired | convertDate }}
+              </li>
+              <li
+                *ngIf="
+                  a.data.status == 'active' &&
+                  (!a.data.uid_pembeli || !a.data.uid_penjual)
+                "
+              >
+                <strong>Durasi:</strong>
+                {{ a.data.durasi }} Hari
+              </li>
+            </ul>
+          </div>
+          <div
+            class="alert alert-warning m-0 alert-pending"
+            *ngIf="
+              a.data.status == 'active' &&
+              (!a.data.uid_pembeli || !a.data.uid_penjual)
+            "
+          >
+            Jika berstatus pending, tanggal expired belum dihitung.
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

@@ -1,0 +1,116 @@
+<div class="modal-header align-items-center">
+  <h5 class="modal-title font-weight-bold pull-left mb-0">Info Transaksi</h5>
+  <button
+    type="button"
+    class="close pull-right"
+    aria-label="Close"
+    (click)="bsModalRef.hide()"
+  >
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body info-transaksi-modal">
+  <table class="table table-borderless">
+    <tr>
+      <td>ID Transaksi</td>
+      <td>{{ data.id }}</td>
+    </tr>
+    <tr>
+      <td>Judul</td>
+      <td>{{ data.judul }}</td>
+    </tr>
+    <tr>
+      <td>Nama Barang</td>
+      <td>{{ data.nama_barang }}</td>
+    </tr>
+    <tr>
+      <td>Jenis Barang</td>
+      <td>{{ data.jenis_barang }}</td>
+    </tr>
+    <tr>
+      <td>Harga</td>
+      <td>{{ data.harga | convertIdr }}</td>
+    </tr>
+    <tr>
+      <td>Durasi Transaksi</td>
+      <td>{{ data.durasi }} Hari</td>
+    </tr>
+    <tr>
+      <td>Transaksi Dibuat</td>
+      <td>{{ data.create | convertDate }}</td>
+    </tr>
+    <tr>
+      <td>Transaksi Berakhir</td>
+      <td>
+        {{
+          data.expired
+            ? (data.expired | convertDate)
+            : "Informasi transaksi berakhir akan keluar saat pembeli sudah masuk ke dalam transaksi."
+        }}
+      </td>
+    </tr>
+    <tr *ngIf="current_role == 'Penjual'">
+      <td>Rekening Bank Anda</td>
+      <td>
+        {{
+          rekBankUser
+            ? rekBankUser.name + " : " + rekBankUser.value
+            : "Loading..."
+        }}
+      </td>
+    </tr>
+    <tr *ngIf="current_role == 'admin'">
+      <td>Rekening Bank Penjual</td>
+      <td>
+        {{
+          rekBankUser
+            ? rekBankUser.name + " : " + rekBankUser.value
+            : "Loading..."
+        }}
+      </td>
+    </tr>
+  </table>
+  <div class="info-trx mb-3">
+    <h3 class="title-info">Deskripsi Barang</h3>
+    <div class="alert alert-warning">
+      {{ data.deskripsi_barang }}
+    </div>
+  </div>
+  <div class="info-trx mb-3">
+    <h3 class="title-info">Syarat Transaksi Selesai</h3>
+    <div class="alert alert-success mb-0">
+      {{ data.syarat_trx_selesai }}
+    </div>
+  </div>
+  <div class="mb-3" *ngIf="InfoPenjual">
+    <h3 class="title-info">Info Penjual</h3>
+    <table class="table table-borderless">
+      <tr>
+        <td>Nama</td>
+        <td>{{ InfoPenjual.fullName }}</td>
+      </tr>
+      <tr>
+        <td>Email</td>
+        <td>{{ InfoPenjual.email }}</td>
+      </tr>
+    </table>
+  </div>
+  <div *ngIf="InfoPembeli">
+    <h3 class="title-info">Info Pembeli</h3>
+    <table class="table table-borderless">
+      <tr>
+        <td>Nama</td>
+        <td>{{ InfoPembeli.fullName }}</td>
+      </tr>
+      <tr>
+        <td>Email</td>
+        <td>{{ InfoPembeli.email }}</td>
+      </tr>
+    </table>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" (click)="bsModalRef.hide()" class="btn btn-danger">
+    Tutup
+  </button>
+</div>

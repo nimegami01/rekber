@@ -1,0 +1,643 @@
+<h1 class="h3 mb-3 text-gray-800 title_transaksi">
+  <span *ngIf="currentRole && !loadingCurrentTransaksi">
+    {{ current_transaksi ? current_transaksi.judul : "" }}
+  </span>
+  <span *ngIf="!currentRole && !loadingCurrentTransaksi">
+    Transaksi Tidak Valid
+  </span>
+  <span *ngIf="loadingCurrentTransaksi"> Loading.. </span>
+</h1>
+<h2 class="h5 mb-4 text-gray-800">
+  Transaksi ID#<strong class="text-gray-600">{{
+    currentRole ? id_transaksi : "Loading.."
+  }}</strong>
+</h2>
+
+<div class="card shadow mb-4">
+  <div class="card-body p-0">
+    <div class="chatroom" [style.height.px]="screenHeight - 140">
+      <!-- List Transaksi -->
+      <div class="listroom">
+        <ul class="p-0 mb-0">
+          <li *ngIf="!all_transaksi">
+            <div class="title_list_room">
+              <div
+                class="spinner-border text-primary spinner-border-sm mr-2"
+                role="status"
+              ></div>
+              Loading..
+            </div>
+            <div class="status_list_room d-flex align-items-center">
+              <i class="fas fa-circle mr-2 text-secondary"></i> Loading..
+            </div>
+          </li>
+          <ng-container *ngIf="all_transaksi">
+            <li
+              *ngFor="let a of all_transaksi"
+              [ngClass]="{ active: a.id == id_transaksi }"
+              [routerLink]="['/user/transaksi', a.id]"
+            >
+              <div class="title_list_room">{{ a.data.judul }}</div>
+              <div class="id_list_room">
+                Role:
+                {{ a.data.uid_penjual == current_uid ? "Penjual" : "Pembeli" }}
+              </div>
+              <div class="id_list_room">ID: {{ a.id }}</div>
+              <div class="status_list_room d-flex align-items-center">
+                <i
+                  class="fas fa-circle mr-2"
+                  [ngClass]="{
+                    'text-success':
+                      a.data.status == 'active' &&
+                      a.data.uid_penjual &&
+                      a.data.uid_pembeli,
+                    'text-danger': a.data.status == 'failed',
+                    'text-secondary': a.data.status == 'cancel',
+                    'text-primary': a.data.status == 'success',
+                    'text-warning':
+                      a.data.status == 'active' &&
+                      (!a.data.uid_penjual || !a.data.uid_pembeli)
+                  }"
+                ></i>
+                {{
+                  a.data.status == "active" &&
+                  (!a.data.uid_penjual || !a.data.uid_pembeli)
+                    ? "Pending"
+                    : modalExpired && a.data.status == "active"
+                    ? "Open | Expired"
+                    : a.data.statusText
+                }}
+              </div>
+            </li>
+          </ng-container>
+        </ul>
+      </div>
+      <!-- Chatroom Content -->
+      <div class="room-content">
+        <!-- Topbar -->
+        <div class="room-topbar position-relative">
+          <div
+            class="d-flex flex-row align-items-center justify-content-between"
+            #topbar
+          >
+            <!-- Left Topbar -->
+            <div class="left-tobar d-flex flex-row">
+              <!-- Penjual -->
+
+              <ng-container *ngIf="currentRole == 'Penjual'">
+                <div
+                  class="input-barang button-top text-white"
+                  (click)="kirimBarangModal()"
+                >
+                  <i class="fas fa-paper-plane mr-2"></i>
+                  {{
+                    current_transaksi.jenis_barang == "digital"
+                      ? "Kirim Barang"
+                      : current_transaksi.jenis_barang == "fisik"
+                      ? "Masukkan Resi"
+                      : ""
+                  }}
+                </div>
+              </ng-container>
+
+              <!-- End Penjual -->
+              <!-- Pembeli -->
+
+              <ng-container *ngIf="currentRole == 'Pembeli'">
+                <div
+                  class="input-barang button-top text-white"
+                  (click)="lihatBarangModal()"
+                >
+                  <i class="fas fa-briefcase mr-2"></i>
+                  Lihat Barang
+                </div>
+                <div class="bayar button-top text-white" (click)="bayarModal()">
+                  <i class="fas fa-money-bill-wave mr-2"></i>
+                  Bayar
+                </div>
+              </ng-container>
+
+              <!-- End Pembeli -->
+            </div>
+            <!-- End Left Topbar -->
+            <!-- Right Topbar -->
+            <div class="right-tobar d-flex flex-row">
+              <!-- Penjual -->
+
+              <ng-container *ngIf="currentRole">
+                <div
+                  class="input-barang button-top text-white bg-primary"
+                  (click)="infoModal()"
+                >
+                  <i class="fas fa-info mr-2"></i>
+                  Info
+                </div>
+                <div
+                  class="input-barang button-top text-white bg-warning"
+                  (click)="pengaturanModal()"
+                >
+                  <i class="fas fa-cog mr-2"></i>
+                  Pengaturan
+                </div>
+              </ng-container>
+
+              <!-- End Penjual -->
+            </div>
+            <!-- End Right Topbar -->
+          </div>
+          <!-- Durasi Berakhir Countdown -->
+          <div
+            class="countdown d-flex flex-row align-items-center"
+            *ngIf="currentRole"
+          >
+            <span *ngIf="expired_cooldown_show"
+              >Berakhir {{ expired_cooldown | secondToDate }}</span
+            >
+            <span
+              class="minimize_countdown"
+              (click)="expired_cooldown_show = !expired_cooldown_show"
+              ><i class="fas fa-minus"></i
+            ></span>
+          </div>
+          <!-- End Durasi Berakhir Countdown -->
+        </div>
+        <!-- End Topbar -->
+        <!-- Container Chat -->
+        <ng-container>
+          <div
+            class="overflow-auto"
+            #scrollMessage
+            [style.height.px]="screenHeight - 140 - 38 - 50"
+          >
+            <!-- Cek transaksi apakah ditemukan -->
+            <div
+              class="alert alert-danger m-4"
+              *ngIf="
+                (!currentRole || !current_transaksi) && !loadingCurrentTransaksi
+              "
+            >
+              Transaksi tidak ditemukan
+            </div>
+
+            <!-- Loading -->
+            <app-loading
+              [loading]="loadingCurrentTransaksi"
+              [error]=""
+            ></app-loading>
+
+            <!-- Jika transaksi valid -->
+            <ng-container
+              *ngIf="
+                current_transaksi && currentRole && !loadingCurrentTransaksi
+              "
+            >
+              <!-- Undang pembeli -->
+              <ng-container
+                *ngIf="!current_transaksi.uid_pembeli && !pembeli_valid"
+              >
+                <div class="invite-pembeli text-center p-5 mb-3">
+                  <ng-container *ngIf="!current_transaksi.uid_pembeli">
+                    <div class="alert alert-info">
+                      Untuk melanjutkan transaksi silahkan undangan pembeli
+                      melalui form inputan di bawah ini.
+                    </div>
+                  </ng-container>
+
+                  <h4 class="font-weight-bold mb-2">Undang Pembeli</h4>
+                  <div class="text-primary mb-3 font-weight-bold">
+                    (Pastikan Pembeli Sudah Terdaftar di Layanan Rekberin)
+                  </div>
+                  <div
+                    class="alert"
+                    [ngClass]="{
+                      'alert-danger': !inputPembeliMsgStatus,
+                      'alert-success': inputPembeliMsgStatus
+                    }"
+                    *ngIf="inputPembeliMsg"
+                  >
+                    {{ inputPembeliMsg }}
+                  </div>
+                  <div
+                    class="
+                      d-flex
+                      justify-content-center
+                      form-invite-pembeli
+                      mb-3
+                    "
+                  >
+                    <input
+                      type="email"
+                      class="form-control"
+                      placeholder="Email"
+                      [formControl]="inputPembeli"
+                      [attr.disabled]="!undangPembeliForm ? '' : null"
+                      (keyup.enter)="undangPembeli()"
+                    />
+                    <button
+                      class="btn btn-primary d-flex align-items-center"
+                      [disabled]="
+                        !inputPembeli.value ||
+                        !undangPembeliForm ||
+                        loadingUndang
+                      "
+                      (click)="undangPembeli()"
+                    >
+                      <i
+                        *ngIf="loadingUndang"
+                        class="spinner-border spinner-border-sm mr-2"
+                        role="status"
+                        aria-hidden="true"
+                      ></i>
+                      <span>Kirim</span>
+                    </button>
+                  </div>
+
+                  <!-- List pembeli yang di undang -->
+                  <ng-container
+                    *ngIf="infoUndangPembeli.length && !loadingUndanganForm"
+                  >
+                    <div class="undangan_pembeli">
+                      <h4 class="font-weight-bold mb-2">Riwayat Undangan</h4>
+                      <ng-container *ngFor="let a of infoUndangPembeli">
+                        <div class="informasi_udg_pembeli">
+                          <h5>
+                            ID#<strong>{{ a.id }}</strong>
+                          </h5>
+                          <ul class="mb-0">
+                            <li class="nama_udg">
+                              <strong>Nama:</strong>
+                              {{ a.profile.fullName }}
+                            </li>
+                            <li class="email_udg">
+                              <strong>Email:</strong>
+                              {{ a.profile.email }}
+                            </li>
+                            <li>
+                              <strong>Tanggal di Undang:</strong>
+                              {{ a.data.date | convertDate }}
+                            </li>
+                            <li class="email_udg">
+                              <strong>Status:</strong>
+                              {{
+                                a.data.status == 0
+                                  ? "Pending"
+                                  : a.data.status == 1
+                                  ? "Diterima"
+                                  : a.data.status == 2
+                                  ? "Ditolak"
+                                  : a.data.status == 3
+                                  ? "Dibatalkan"
+                                  : ""
+                              }}
+                            </li>
+                          </ul>
+                          <div class="text-right" *ngIf="a.data.status == 0">
+                            <button
+                              class="btn btn-danger btn-sm"
+                              (click)="batalUndangPembeli(a.id)"
+                            >
+                              Batalkan
+                            </button>
+                          </div>
+                        </div>
+                      </ng-container>
+                    </div>
+                  </ng-container>
+                </div>
+              </ng-container>
+              <!-- End undang pembeli -->
+
+              <!-- Cek apakah pembeli valid -->
+              <div
+                class="alert alert-danger m-4"
+                *ngIf="uid_pembeli && !pembeli_valid"
+              >
+                Pembeli Tidak Valid
+              </div>
+              <!-- End cek apakah pembeli valid -->
+
+              <!-- Transaksi belum ada pembeli -->
+              <ng-container *ngIf="!current_transaksi.uid_pembeli">
+                <div class="alert alert-warning mx-3">
+                  Transaksi Belum dapat dilakukan.
+                </div>
+              </ng-container>
+              <!-- end Transaksi belum ada pembeli -->
+
+              <!-- Chat Room -->
+              <ng-container
+                *ngIf="current_transaksi.uid_pembeli && pembeli_valid"
+              >
+                <div class="content-message overflow-hidden m-3">
+                  <ng-container *ngIf="chat_list">
+                    <ng-container
+                      *ngFor="let a of chat_list; let index_chat = index"
+                    >
+                      <!-- Start Pesan Sistem -->
+                      <ng-container *ngIf="!a.profile && !a.role_transaksi">
+                        <div
+                          class="pesan_sistem"
+                          *ngIf="a.data.role == 'system'"
+                        >
+                          <div class="container_pesan_sistem">
+                            <div class="date_pesan_sistem">
+                              {{ a.data.date | convertToAgo }}
+                            </div>
+                            <div class="alert alert-primary">
+                              <div class="content_pesan_sistem">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                <strong>Pesan Sistem : </strong>
+                                <span [innerHTML]="a.data.pesan"></span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </ng-container>
+                      <!-- End Pesan Sistem -->
+                      <!-- Start Pesan USER -->
+                      <div
+                        *ngIf="a.profile && a.role_transaksi"
+                        class="container-message type-text"
+                        [ngClass]="{
+                          kamu: a.data.uid == current_uid,
+                          'type-img': a.data.image,
+                          dia: a.data.uid != current_uid
+                        }"
+                      >
+                        <div
+                          class="image-profile"
+                          [ngClass]="{
+                            'ml-3': a.data.uid == current_uid,
+                            'mr-3': a.data.uid != current_uid
+                          }"
+                        >
+                          <img
+                            [src]="
+                              a.data.role == 'admin'
+                                ? 'https://storage.googleapis.com/fastwork-static/4cdb5e84-df58-4096-94fd-e4ed4df6d28f.jpg'
+                                : a.profile.picture
+                            "
+                          />
+                        </div>
+                        <div class="container-message-2">
+                          <div class="content-header mb-2">
+                            <h4 class="title mb-1 font-weight-bold">
+                              {{
+                                a.data.role == "admin"
+                                  ? "Admin"
+                                  : a.role_transaksi
+                              }}
+                            </h4>
+                            <div class="email">{{ a.profile.fullName }}</div>
+                          </div>
+                          <!-- Image -->
+                          <ng-container *ngIf="a.data.image">
+                            <div
+                              class="image-list"
+                              [ngClass]="{
+                                'grid-rtl': a.data.uid == current_uid
+                              }"
+                            >
+                              <ng-container *ngFor="let img of a.data.image">
+                                <div class="image">
+                                  <a [href]="img" target="_blank">
+                                    <img [src]="img" />
+                                  </a>
+                                </div>
+                              </ng-container>
+                            </div>
+                          </ng-container>
+                          <!-- End Image -->
+                          <!-- Isi pesan -->
+                          <ng-container *ngIf="a.data.pesan">
+                            <div
+                              class="message mb-2"
+                              [ngClass]="{ adm: a.data.role == 'admin' }"
+                            >
+                              <pre
+                                class="mb-0"
+                                *ngIf="
+                                  a.data.status == 'show' &&
+                                  a.pesan_sensor &&
+                                  a.pesan_sensor.show
+                                "
+                                >{{ a.pesan_sensor.hasil }}</pre
+                              >
+                              <pre
+                                class="mb-0"
+                                *ngIf="
+                                  a.data.status == 'show' &&
+                                  (!a.pesan_sensor || !a.pesan_sensor.show)
+                                "
+                                >{{ a.data.pesan }}</pre
+                              >
+                              <div class="mb-0" *ngIf="a.data.status == 'hide'">
+                                <strong
+                                  ><i
+                                    >Pesan Disembunyikan oleh admin.</i
+                                  ></strong
+                                >
+                              </div>
+                            </div>
+                          </ng-container>
+                          <ng-container
+                            *ngIf="a.data.status == 'show' && a.pesan_sensor"
+                          >
+                            <button
+                              class="btn btn-danger btn-sm mb-2"
+                              (click)="showChatSensor(index_chat)"
+                            >
+                              Lihat pesan asli
+                            </button>
+                            <div class="alert alert-warning mb-2">
+                              <pre
+                                class="mb-0"
+                              ><i class="fas fa-exclamation-triangle mr-2"></i><strong>Peringatan:</strong> kata pada urutan <ng-container *ngFor="let sensor of a.pesan_sensor.sensor;let sensor_index = index"><strong>{{ sensor.start }}</strong>-<strong>{{ sensor.end }}</strong>{{ sensor_index < (a.pesan_sensor.sensor.length-1)? ', ' : '' }}</ng-container> telah terindikasi kata penipuan/kata kotor.</pre>
+                            </div>
+                          </ng-container>
+                          <ng-container *ngIf="a.data.notif">
+                            <div class="alert alert-danger mb-2">
+                              <pre
+                                class="mb-0"
+                              ><strong>Notif:</strong> {{ a.data.notif }}</pre>
+                            </div>
+                          </ng-container>
+                          <!-- End isi pesan -->
+                          <div
+                            class="
+                              content-footer
+                              d-flex
+                              flex-row
+                              align-items-center
+                              justify-content-between
+                            "
+                          >
+                            <div class="info">
+                              <span class="date">{{
+                                a.data.date | convertToAgo
+                              }}</span>
+                            </div>
+                            <!-- <div class="tools">
+                              <span class="hide">Hide</span>
+                            </div> -->
+                          </div>
+                        </div>
+                      </div>
+                      <div class="clear"></div>
+                      <!-- End Pesan -->
+                    </ng-container>
+                    <!-- Start Pesan Status -->
+                    <ng-container
+                      *ngIf="
+                        current_transaksi.status != 'active' &&
+                        current_transaksi.status != 'pending'
+                      "
+                    >
+                      <div class="pesan_sistem">
+                        <div class="container_pesan_sistem">
+                          <div
+                            class="alert"
+                            [ngClass]="
+                              current_transaksi.status == 'success'
+                                ? 'alert-success'
+                                : 'alert-danger'
+                            "
+                          >
+                            <div class="content_pesan_sistem">
+                              <i class="fas fa-exclamation-triangle mr-2"></i>
+                              {{
+                                current_transaksi.status == "failed"
+                                  ? "Admin Telah Menggagalkan Transaksi Ini."
+                                  : current_transaksi.status == "cancel"
+                                  ? "Admin Telah Membatalkan Transaksi Ini."
+                                  : "Transaksi Ini Ditutup Karena Telah Sukses."
+                              }}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-container>
+                    <!-- End Pesan Status -->
+                  </ng-container>
+                </div>
+              </ng-container>
+            </ng-container>
+            <!-- End Chat Room -->
+          </div>
+        </ng-container>
+        <!-- End Container Chat -->
+        <!-- Bottom Bar -->
+        <div
+          class="bottom-bar d-flex flex-row position-relative"
+          #container_bottom_bar
+          *ngIf="currentRole"
+        >
+          <textarea
+            rows="10"
+            placeholder="Tulis pesan.."
+            [formControl]="form_pesan"
+            [attr.disabled]="
+              !current_transaksi.uid_pembeli ||
+              current_transaksi.status != 'active'
+                ? ''
+                : null
+            "
+            [ngStyle]="{
+              'width.px':
+                container_bottom_bar.offsetWidth -
+                (image_upload.offsetWidth + kirim_pesan.offsetWidth)
+            }"
+            (keydown.enter)="kirimPesan()"
+          ></textarea>
+          <div
+            class="
+              image_upload
+              d-flex
+              justify-content-center
+              align-items-center
+            "
+            #image_upload
+            (click)="
+              current_transaksi.uid_pembeli &&
+              current_transaksi.status == 'active'
+                ? file_upload.click()
+                : ''
+            "
+          >
+            <i class="fas fa-image"></i>
+          </div>
+          <button
+            class="
+              kirim_pesan
+              text-white
+              d-flex
+              justify-content-center
+              align-items-center
+              font-weight-bold
+            "
+            #kirim_pesan
+            (click)="kirimPesan()"
+            [attr.disabled]="
+              !current_transaksi.uid_pembeli ||
+              current_transaksi.status != 'active'
+                ? ''
+                : null
+            "
+          >
+            KIRIM
+          </button>
+          <!-- Image Upload Preview -->
+          <ng-container *ngIf="imagePreview.length">
+            <div class="image_upload_preview">
+              <div class="image-list d-flex flex-row position-relative mb-2">
+                <div
+                  class="image"
+                  *ngFor="let a of imagePreview; let i = index"
+                >
+                  <img [src]="a" />
+                  <div
+                    class="
+                      cancel
+                      d-flex
+                      justify-content-center
+                      align-items-center
+                    "
+                    (click)="removeImageFromList(i)"
+                  >
+                    <i class="fas fa-times"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="progress" *ngIf="loadingImage">
+                <div
+                  class="
+                    progress-bar progress-bar-striped progress-bar-animated
+                  "
+                  role="progressbar"
+                  aria-valuenow="100"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  style="width: 100%"
+                ></div>
+              </div>
+              <div class="close-all">
+                Tutup <i class="fas fa-times ml-2"></i>
+              </div>
+            </div>
+          </ng-container>
+          <!-- End Image Upload Preview -->
+        </div>
+        <!-- End Bottom Bar -->
+      </div>
+      <!-- End Chatroom Content -->
+    </div>
+  </div>
+</div>
+<input
+  style="display: none"
+  type="file"
+  #file_upload
+  (change)="imageSelected($event)"
+  multiple
+  accept="image/*"
+/>
